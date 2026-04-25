@@ -9,7 +9,13 @@ from typing import Any
 
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report, f1_score
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 from sklearn.model_selection import train_test_split
 
 
@@ -43,7 +49,7 @@ def create_model(random_state: int = 42) -> RandomForestClassifier:
         max_depth=None,
         min_samples_split=2,
         min_samples_leaf=1,
-        random_state=random_state,
+        random_state=2000,
         n_jobs=1,
     )
 
@@ -71,14 +77,19 @@ def train_and_evaluate(
     y_pred = model.predict(X_test)
 
     exact_match_accuracy = accuracy_score(y_test, y_pred)
-    micro_f1 = f1_score(y_test, y_pred, average="micro", zero_division=0)
-    macro_f1 = f1_score(y_test, y_pred, average="macro", zero_division=0)
-    report = classification_report(
-        y_test,
-        y_pred,
-        target_names=label_names,
-        zero_division=0,
-    )
+    overall_precision = precision_score(y_test, y_pred, average="micro", zero_division=0)
+    overall_recall = recall_score(y_test, y_pred, average="micro", zero_division=0)
+    overall_f1 = f1_score(y_test, y_pred, average="micro", zero_division=0)
+    report_df = pd.DataFrame(
+        classification_report(
+            y_test,
+            y_pred,
+            target_names=label_names,
+            zero_division=0,
+            output_dict=True,
+        )
+    ).T.drop(columns=["support"], errors="ignore")
+    report = report_df.to_string()
 
     artifact = {
         "model": model,
@@ -93,8 +104,9 @@ def train_and_evaluate(
 
     return {
         "exact_match_accuracy": exact_match_accuracy,
-        "micro_f1": micro_f1,
-        "macro_f1": macro_f1,
+        "overall_precision": overall_precision,
+        "overall_recall": overall_recall,
+        "overall_f1": overall_f1,
         "classification_report": report,
         "model_path": str(output_file),
         "feature_names": feature_names,
@@ -113,9 +125,10 @@ def main() -> None:
 
     results = train_and_evaluate(args.csv_path, args.model_output_path)
 
-    print(f"Exact match accuracy: {results['exact_match_accuracy']:.4f}")
-    print(f"Micro F1: {results['micro_f1']:.4f}")
-    print(f"Macro F1: {results['macro_f1']:.4f}")
+    print(f"Overall accuracy: {results['exact_match_accuracy']:.4f}")
+    print(f"Overall precision: {results['overall_precision']:.4f}")
+    print(f"Overall recall: {results['overall_recall']:.4f}")
+    print(f"Overall F1: {results['overall_f1']:.4f}")
     print("Classification report:")
     print(results["classification_report"])
     print(f"Saved model artifact to: {results['model_path']}")
