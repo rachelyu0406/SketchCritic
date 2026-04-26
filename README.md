@@ -1,12 +1,16 @@
 # SketchCritic
 
-SketchCritic is a facial-proportion critique tool that extracts MediaPipe face landmarks, computes engineered proportion features, and predicts likely proportion issues with a trained classifier. It includes a local Gradio app, command-line prediction scripts, synthetic-data generation, and evaluation notebooks for comparing model behavior.
+SketchCritic is a tool that helps artists improve their skills by pointing out any proportion issues in their drawing. The user uploads a front facing portrait drawing and the tool will point out any proportional issues it has.
 
 ## What it Does
 
-SketchCritic takes a face image, runs MediaPipe Face Landmarker to locate facial landmarks, converts those landmarks into interpretable geometric features, and uses a trained Random Forest or MLP model to predict facial proportion issues such as eye-size imbalance, vertical placement issues, or nose-width relationships. The project also includes synthetic data generation for training, notebook-based evaluation, and simple visualization utilities for understanding generated feature rows.
+SketchCritic takes a face image, runs MediaPipe Face Landmarker to locate facial landmarks, converts those landmarks into interpretable geometric features, and uses a trained Random Forest model to predict facial proportion issues such as eye-size imbalance, vertical placement issues, or nose-width relationships.
 
 ## Quick Start
+
+Access deployed app here:
+
+https://huggingface.co/spaces/rachelyu0406/SketchCritic
 
 Install dependencies:
 
@@ -40,8 +44,8 @@ python app.py
 
 ## Video Links
 
-- Demo video: add your demo link here
-- Technical walkthrough: add your technical walkthrough link here
+- Demo video: 
+- Technical walkthrough: 
 
 ## Evaluation
 

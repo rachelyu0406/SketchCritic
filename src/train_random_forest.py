@@ -18,7 +18,7 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 
-
+# Read the synthetic CSV and separate numeric features from binary label columns.
 def load_dataset(
     csv_path: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, list[str], list[str]]:
@@ -41,7 +41,7 @@ def load_dataset(
     y = data[label_names]
     return X, y, feature_names, label_names
 
-
+# Define the Random Forest model used for multi-label training.
 def create_model(random_state: int = 42) -> RandomForestClassifier:
     """Create a small Random Forest for multi-label classification."""
     return RandomForestClassifier(
@@ -53,7 +53,7 @@ def create_model(random_state: int = 42) -> RandomForestClassifier:
         n_jobs=1,
     )
 
-
+# Train the Random Forest, evaluate it on a held-out split, and save the artifact.
 def train_and_evaluate(
     csv_path: str,
     model_output_path: str,
@@ -113,7 +113,7 @@ def train_and_evaluate(
         "label_names": label_names,
     }
 
-
+# Expose Random Forest training as a small command-line utility.
 def main() -> None:
     """Command-line entry point for training the multi-label Random Forest."""
     parser = argparse.ArgumentParser(

@@ -28,14 +28,14 @@ OPPOSING_LABEL_PAIRS = [
     ),
 ]
 
-
+# Load the saved classifier artifact from disk.
 def _load_model_artifact(model_path: str) -> dict[str, Any]:
     """Load a trained model artifact from disk."""
     with open(model_path, "rb") as handle:
         artifact = pickle.load(handle)
     return artifact
 
-
+# Recover whichever balanced label name was stored in the artifact.
 def _default_balanced_label(label_names: list[str]) -> str:
     """Return the stored balanced label name when possible."""
     for candidate in ("label_balanced", "balanced"):
@@ -43,17 +43,17 @@ def _default_balanced_label(label_names: list[str]) -> str:
             return candidate
     return "balanced"
 
-
+# Normalize labels so prefixed and non-prefixed names compare the same way.
 def _canonical_label(label: str) -> str:
     """Normalize a label for internal comparison."""
     return label.removeprefix("label_")
 
-
+# Build a lookup from normalized labels back to their raw stored names.
 def _raw_label_map(label_names: list[str]) -> dict[str, str]:
     """Map normalized labels back to the raw labels stored in the artifact."""
     return {_canonical_label(label): label for label in label_names}
 
-
+# Convert per-label probabilities into the final list of model outputs.
 def postprocess_mlp_predictions(
     probabilities: dict[str, float], threshold: float
 ) -> list[str]:
@@ -98,7 +98,7 @@ def postprocess_mlp_predictions(
 
     return [raw_map[label] for label in selected]
 
-
+# Read per-label confidence scores from models that expose predict_proba.
 def _extract_confidences(
     classifier: Any, feature_vector: Any, label_names: list[str]
 ) -> dict[str, float]:
@@ -125,12 +125,12 @@ def _extract_confidences(
 
     return confidences
 
-
+# Clean up label names before printing them to the CLI.
 def _display_label(raw_label: str) -> str:
     """Strip the label_ prefix for CLI display."""
     return raw_label.removeprefix("label_")
 
-
+# Reorder computed features to exactly match the model's training schema.
 def _ordered_feature_frame(
     feature_dict: dict[str, float], feature_names: list[str]
 ) -> pd.DataFrame:
@@ -140,7 +140,7 @@ def _ordered_feature_frame(
         columns=feature_names,
     )
 
-
+# Run the full prediction pipeline from image to final model labels.
 def predict_issue(
     image_path: str,
     face_model_path: str,
@@ -248,7 +248,7 @@ def predict_issue(
         "message": "Model predictions computed successfully.",
     }
 
-
+# Build the CLI parser for one-image model inference.
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Run SketchCritic model prediction on one face image."
@@ -266,7 +266,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     return parser
 
-
+# Execute the CLI prediction flow and print the results.
 def main() -> None:
     """Run the model prediction pipeline."""
     parser = _build_parser()

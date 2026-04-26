@@ -15,12 +15,12 @@ CANVAS_HEIGHT = 1000
 FACE_WIDTH = 360
 FACE_HEIGHT = 560
 
-
+# Keep a numeric value inside a fixed range for drawing stability.
 def clamp(value: float, low: float, high: float) -> float:
     """Clamp a float into a closed interval."""
     return max(low, min(high, value))
 
-
+# Load one synthetic CSV row for visualization by index.
 def load_row(csv_path: str, row_index: int) -> dict[str, Any]:
     """Load one row from the synthetic CSV by index."""
     data = pd.read_csv(csv_path)
@@ -28,7 +28,7 @@ def load_row(csv_path: str, row_index: int) -> dict[str, Any]:
         raise ValueError(f"Row index {row_index} is out of range for {len(data)} rows.")
     return data.iloc[row_index].to_dict()
 
-
+# Return shared face-layout values used by the drawing routine.
 def _face_geometry() -> dict[str, float]:
     """Return reusable face layout constants."""
     face_left = (CANVAS_WIDTH - FACE_WIDTH) / 2
@@ -42,7 +42,7 @@ def _face_geometry() -> dict[str, float]:
         "face_center_y": face_top + FACE_HEIGHT / 2,
     }
 
-
+# Render one synthetic sample as a simple schematic face image.
 def draw_face(row: dict[str, Any], output_path: str) -> Path:
     """Draw a simple face diagram for one synthetic row and save it as a PNG."""
     geom = _face_geometry()
@@ -186,7 +186,7 @@ def draw_face(row: dict[str, Any], output_path: str) -> Path:
     image.save(output_file)
     return output_file
 
-
+# Build the CLI parser for the row-visualization tool.
 def build_parser() -> argparse.ArgumentParser:
     """Create the command-line parser."""
     parser = argparse.ArgumentParser(
@@ -201,7 +201,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     return parser
 
-
+# Run the visualization CLI and save the requested PNG.
 def main() -> None:
     """Load one row and save a face diagram PNG."""
     parser = build_parser()

@@ -1,9 +1,0 @@
-Upload Image,Status / Message,Detected proportion issues:,timestamp
-.gradio\flagged\Upload Image\b3e259b52a9bf2c8f90f\bad_proportion.jpg,ok: Model predictions computed successfully.,"Detected proportion issues:
-- mouth_too_high
-- both_eyes_appear_small
-- left_eye_too_high",2026-04-25 22:39:37.558278
-.gradio\flagged\Upload Image\0c6f8fd7838b8b8d66a9\bad_proportion.jpg,ok: Model predictions computed successfully.,"Detected proportion issues:
-- mouth_too_high
-- both_eyes_appear_small
-- left_eye_too_high",2026-04-25 22:39:40.008712

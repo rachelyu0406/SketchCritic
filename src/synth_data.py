@@ -193,7 +193,7 @@ LABEL_RELEVANT_FEATURES = {
     "right_mouth_corner_too_high": ["left_mouth_corner_y_minus_right_mouth_corner_y_ratio"],
 }
 
-
+# Make sure the declared label list fully matches what the generator can emit.
 def validate_label_names() -> None:
     """Validate that the generator labels are fully represented and unique."""
     if len(LABEL_NAMES) != len(set(LABEL_NAMES)):
@@ -206,7 +206,7 @@ def validate_label_names() -> None:
             + ", ".join(missing_labels)
         )
 
-
+# Return a neutral baseline feature vector representing a balanced face.
 def canonical_feature_vector() -> dict[str, float]:
     """Return the baseline feature vector for a balanced face."""
     return {
@@ -234,7 +234,7 @@ def canonical_feature_vector() -> dict[str, float]:
         "left_mouth_corner_y_minus_right_mouth_corner_y_ratio": 0.0,
     }
 
-
+# Add mild variation to balanced examples so they are not all identical.
 def _add_small_noise(
     feature_dict: dict[str, float], rng: np.random.Generator
 ) -> dict[str, float]:
@@ -247,7 +247,7 @@ def _add_small_noise(
             noisy[name] += float(rng.normal(0.0, 0.015))
     return noisy
 
-
+# Add tiny background noise to issue samples before label-specific shifts.
 def _add_issue_noise(
     feature_dict: dict[str, float], rng: np.random.Generator
 ) -> dict[str, float]:
@@ -260,7 +260,7 @@ def _add_issue_noise(
             noisy[name] += float(rng.normal(0.0, 0.004))
     return noisy
 
-
+# Add extra variation only to features that matter for the active labels.
 def _vary_relevant_features(
     feature_dict: dict[str, float], active_labels: list[str], rng: np.random.Generator
 ) -> dict[str, float]:
@@ -278,7 +278,7 @@ def _vary_relevant_features(
 
     return varied
 
-
+# Sample balanced values that stay inside the non-issue side of each rule.
 def _add_balanced_variation(
     feature_dict: dict[str, float], rng: np.random.Generator
 ) -> dict[str, float]:
@@ -326,7 +326,7 @@ def _add_balanced_variation(
 
     return varied
 
-
+# Clamp synthetic values to a reasonable numeric range after perturbation.
 def _clip_feature_values(feature_dict: dict[str, float]) -> dict[str, float]:
     """Keep ratios positive and offsets within a reasonable normalized range."""
     clipped = feature_dict.copy()
@@ -339,21 +339,21 @@ def _clip_feature_values(feature_dict: dict[str, float]) -> dict[str, float]:
             clipped[name] = float(max(clipped[name], 0.05))
     return clipped
 
-
+# Sample a value safely above a rule threshold.
 def _sample_above_threshold(
     rng: np.random.Generator, threshold: float, margin_low: float, margin_high: float
 ) -> float:
     """Sample a value clearly above a threshold."""
     return float(threshold + rng.uniform(margin_low, margin_high))
 
-
+# Sample a value safely below a rule threshold.
 def _sample_below_threshold(
     rng: np.random.Generator, threshold: float, margin_low: float, margin_high: float
 ) -> float:
     """Sample a value clearly below a threshold."""
     return float(max(threshold - rng.uniform(margin_low, margin_high), 0.05))
 
-
+# Usually sample above threshold, with an optional small chance of a near-miss.
 def _sample_soft_above_threshold(
     rng: np.random.Generator,
     threshold: float,
@@ -366,7 +366,7 @@ def _sample_soft_above_threshold(
         return _sample_below_threshold(rng, threshold, below_margin * 0.3, below_margin)
     return _sample_above_threshold(rng, threshold, above_margin * 0.3, above_margin)
 
-
+# Usually sample below threshold, with an optional small chance of a near-miss.
 def _sample_soft_below_threshold(
     rng: np.random.Generator,
     threshold: float,
@@ -379,7 +379,7 @@ def _sample_soft_below_threshold(
         return _sample_above_threshold(rng, threshold, above_margin * 0.3, above_margin)
     return _sample_below_threshold(rng, threshold, below_margin * 0.3, below_margin)
 
-
+# Apply the feature shifts associated with one synthetic label.
 def _apply_label_effect(
     feature_dict: dict[str, float], label: str, rng: np.random.Generator
 ) -> None:
@@ -507,13 +507,13 @@ def _apply_label_effect(
 
     raise ValueError(f"Unsupported synthetic label: {label}")
 
-
+# Scale the number of rows per label based on the current emphasis settings.
 def _sample_count_for_label(label: str, samples_per_class: int) -> int:
     """Return a label-specific sample count for better class emphasis."""
     multiplier = LABEL_SAMPLE_MULTIPLIERS.get(label, 1.0)
     return max(1, int(round(samples_per_class * multiplier)))
 
-
+# Choose a limited set of multi-label combinations to include in the dataset.
 def _select_multilabel_combos(
     non_balanced_labels: list[str],
     samples_per_multilabel_combo: int,
@@ -548,7 +548,7 @@ def _select_multilabel_combos(
     combo_count = min(samples_per_multilabel_combo, len(sorted_combos))
     return sorted_combos[:combo_count]
 
-
+# Convert active labels into one binary CSV column per label name.
 def _label_columns(active_labels: list[str]) -> dict[str, int]:
     """Create one binary label column per label name."""
     active = set(active_labels)
@@ -557,7 +557,7 @@ def _label_columns(active_labels: list[str]) -> dict[str, int]:
         for label in LABEL_NAMES
     }
 
-
+# Build one synthetic training row for a chosen set of active labels.
 def generate_sample(
     active_labels: list[str], rng: np.random.Generator
 ) -> dict[str, float | int | str]:
@@ -605,7 +605,7 @@ def generate_sample(
     row["active_labels"] = "|".join(active_labels)
     return row
 
-
+# Assemble the full synthetic dataset including balanced, single-label, and combo rows.
 def generate_dataset(
     samples_per_class: int,
     samples_per_multilabel_combo: int,
@@ -649,7 +649,7 @@ def generate_dataset(
         "columns": feature_names + label_columns + ["active_labels"],
     }
 
-
+# Save the generated dataset to disk as a CSV file.
 def save_dataset_csv(
     output_path: str,
     samples_per_class: int = 200,
@@ -673,7 +673,7 @@ def save_dataset_csv(
 
     return output_file
 
-
+# Run the synthetic dataset generator from the command line.
 def main() -> None:
     """Generate and save a synthetic SketchCritic CSV dataset."""
     parser = argparse.ArgumentParser(

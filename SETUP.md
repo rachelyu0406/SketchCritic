@@ -4,7 +4,14 @@
 
 - Python 3.11+ recommended
 - `pip`
-- Internet access the first time you run [app.py](C:\Users\rache\OneDrive\Desktop\Duke\cs 372\Final Project\SketchCritic\app.py), because it can download the MediaPipe `face_landmarker.task` file automatically if it is missing
+- Internet access the first time you run `app.py`, because it can download the MediaPipe `face_landmarker.task` file automatically if it is missing
+
+## To use model as it is, access it here:
+
+https://huggingface.co/spaces/rachelyu0406/SketchCritic
+
+Continue below to run it locally.
+
 
 ## Installation
 
@@ -14,9 +21,9 @@ From the project root:
 pip install -r requirements.txt
 ```
 
-## Generate Data
+## Optional: Generate Data
 
-To generate the current synthetic dataset:
+To generate the current synthetic dataset (not recommended as current CSV was manually reviewed):
 
 ```bash
 python src/synth_data.py data/sketchcritic_synthetic.csv --samples-per-class 4 --samples-per-multilabel-combo 1
@@ -30,7 +37,7 @@ Train the Random Forest model:
 python src/train_random_forest.py data/sketchcritic_synthetic.csv models/sketchcritic_rf.pkl
 ```
 
-Train the MLP model:
+Train the MLP model (not used in final app):
 
 ```bash
 python src/train_mlp.py data/sketchcritic_synthetic.csv models/sketchcritic_mlp.pkl
@@ -60,7 +67,7 @@ Then open the local URL shown in the terminal, usually `http://127.0.0.1:7860`.
 
 To review model performance, open:
 
-- [evaluate_models.ipynb]
+- `evaluate_models.ipynb`
 
 This notebook contains:
 

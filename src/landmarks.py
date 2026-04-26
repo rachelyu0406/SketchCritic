@@ -1,19 +1,17 @@
 """MediaPipe Face Landmarker extraction for one image."""
 
 from __future__ import annotations
-
 import argparse
 import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
-
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from PIL import Image
 
-
+# Configure the MediaPipe face landmarker used throughout the pipeline.
 def create_face_landmarker(model_path: str) -> vision.FaceLandmarker:
     """Create a MediaPipe Face Landmarker for single-image inference."""
     base_options = python.BaseOptions(model_asset_path=model_path)
@@ -26,7 +24,7 @@ def create_face_landmarker(model_path: str) -> vision.FaceLandmarker:
     )
     return vision.FaceLandmarker.create_from_options(options)
 
-
+# Load an input image and force it into RGB before passing it to MediaPipe.
 def _load_mp_image(image_path: str) -> mp.Image:
     """Load an image and normalize it to RGB for MediaPipe."""
     with Image.open(image_path) as image:
@@ -39,7 +37,7 @@ def _load_mp_image(image_path: str) -> mp.Image:
         finally:
             Path(temp_path).unlink(missing_ok=True)
 
-
+# Extract exactly one face worth of landmarks and package them into a simple dict.
 def extract_landmarks(image_path: str, model_path: str) -> dict[str, Any]:
     """Load an image, detect exactly one face, and return structured landmarks."""
     image_file = Path(image_path)
@@ -78,7 +76,7 @@ def extract_landmarks(image_path: str, model_path: str) -> dict[str, Any]:
         "landmarks": structured_points,
     }
 
-
+# Build the small CLI parser for standalone landmark testing.
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Run MediaPipe Face Landmarker on a single image."
@@ -94,7 +92,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     return parser
 
-
+# Run the standalone landmark extraction command-line entry point.
 def main() -> None:
     """Simple CLI entry point for quick landmark extraction checks."""
     parser = _build_parser()

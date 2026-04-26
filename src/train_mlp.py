@@ -20,7 +20,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-
+# Read the synthetic CSV and separate numeric features from binary label columns.
 def load_dataset(csv_path: str) -> tuple[pd.DataFrame, pd.DataFrame, list[str], list[str]]:
     """Load the CSV and split it into feature and label tables."""
     data = pd.read_csv(csv_path)
@@ -43,7 +43,7 @@ def load_dataset(csv_path: str) -> tuple[pd.DataFrame, pd.DataFrame, list[str], 
     y = data[label_names]
     return X, y, feature_names, label_names
 
-
+# Define the preprocessing-plus-MLP training pipeline.
 def create_model(random_state: int = 42) -> Pipeline:
     """Create a small MLP pipeline for multi-label classification."""
     return Pipeline(
@@ -68,7 +68,7 @@ def create_model(random_state: int = 42) -> Pipeline:
         ]
     )
 
-
+# Train the MLP, evaluate it on a held-out split, and save the artifact.
 def train_and_evaluate(
     csv_path: str,
     model_output_path: str,
@@ -128,7 +128,7 @@ def train_and_evaluate(
         "label_names": label_names,
     }
 
-
+# Expose MLP training as a small command-line utility.
 def main() -> None:
     """Command-line entry point for training the multi-label model."""
     parser = argparse.ArgumentParser(

@@ -29,7 +29,7 @@ RIGHT_MOUTH_CORNER_INDEX = 291
 
 MIN_SECTION_WIDTH = 1e-6
 
-
+# Convert the landmark list into a dictionary keyed by landmark index.
 def _point_map(landmark_result: dict[str, Any]) -> dict[int, dict[str, float]]:
     """Convert the structured landmark list into an index lookup map."""
     points = landmark_result["landmarks"]
@@ -42,18 +42,18 @@ def _point_map(landmark_result: dict[str, Any]) -> dict[int, dict[str, float]]:
         for point in points
     }
 
-
+# Compute the mean for small groups of related coordinates.
 def _average(values: list[float]) -> float:
     """Return the arithmetic mean of a list of numbers."""
     return sum(values) / len(values)
 
-
+# Avoid division-by-zero when turning raw distances into ratios.
 def _safe_ratio(numerator: float, denominator: float) -> float:
     """Compute a ratio while avoiding division by zero."""
     epsilon = 1e-6
     return numerator / max(abs(denominator), epsilon)
 
-
+# Fetch a required landmark point and fail with a clear message if it is missing.
 def require_point(
     points: dict[int, dict[str, float]], index: int, name: str
 ) -> dict[str, float]:
@@ -63,7 +63,7 @@ def require_point(
         raise ValueError(f"Missing required landmark '{name}' at index {index}.")
     return point
 
-
+# Derive the normalized facial proportion features used by the classifiers.
 def compute_features(landmark_result: dict[str, Any]) -> dict[str, float]:
     """Compute facial proportion features from one-face landmark output."""
     points = _point_map(landmark_result)
