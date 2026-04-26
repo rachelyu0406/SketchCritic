@@ -45,7 +45,7 @@ python app.py
 ## Video Links
 
 - Demo video: https://drive.google.com/file/d/1n2jYIHCFuAMAAkU6GNzu_SQTDALx6lFw/view?usp=sharing
-- Technical walkthrough: 
+- Technical walkthrough: https://drive.google.com/file/d/1pu3LSlrdtaLsrBdjbDHyt6KFssfRsFr5/view?usp=sharing
 
 ## Evaluation
 
@@ -69,7 +69,7 @@ An example of the generated face is shown below.
 ![Example of face visualization](data/visualizations/face_row_193.png)
 
 
-Two successful examples of qualitative evaluation for the model are shown below. The first is an ideal drawing that the system classifies as balanced, and the second is a more generic drawing where the system detects proportion issues.
+Two successful examples of qualitative evaluation for the model are shown below. The first is an ideal drawing that the system classifies as balanced, and the second is a more generic drawing where the system detects proportion issues. The second image correctly predicted nose too narrow, too low, but missed left eye too big.
 
 ![Perfect drawing result](evaluation_results/perfect_drawing_result.png)
 
@@ -82,6 +82,8 @@ The project also includes qualitative error analysis using failure-case examples
 - when there are two or more faces in the input image
 - when the drawing is not front-facing and is shown from another angle
 - when the drawing is too simple for MediaPipe to detect a face reliably
+
+In this case, they system fails because mediapipe cannot detect drawings that deviates from a standard face so much that it is hard to recognize it as a face.
 
 These failure cases are illustrated below.
 
