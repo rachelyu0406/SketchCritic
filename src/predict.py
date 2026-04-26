@@ -28,7 +28,7 @@ OPPOSING_LABEL_PAIRS = [
     ),
 ]
 
-# Load the saved classifier artifact from disk.
+# Load the saved classifier from disk.
 def _load_model_artifact(model_path: str) -> dict[str, Any]:
     """Load a trained model artifact from disk."""
     with open(model_path, "rb") as handle:

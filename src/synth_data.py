@@ -145,6 +145,19 @@ BROAD_IMBALANCE_LABELS = {
     "middle_lower_vertical_imbalance",
 }
 
+OPPOSING_LABEL_PAIRS = [
+    ("both_eyes_appear_large", "both_eyes_appear_small"),
+    ("nose_too_high", "nose_too_low"),
+    ("mouth_too_high", "mouth_too_low"),
+    ("left_eye_appears_larger", "right_eye_appears_larger"),
+    ("left_eye_too_high", "right_eye_too_high"),
+    ("left_mouth_corner_too_high", "right_mouth_corner_too_high"),
+    (
+        "nose_too_narrow_relative_to_inner_eye_gap",
+        "nose_too_wide_relative_to_inner_eye_gap",
+    ),
+]
+
 LABEL_RELEVANT_FEATURES = {
     "middle_lower_vertical_imbalance": [
         "middle_third_to_lower",
@@ -205,6 +218,13 @@ def validate_label_names() -> None:
             "LABEL_NAMES is missing generated labels: "
             + ", ".join(missing_labels)
         )
+
+
+# Reject label sets that contain mutually exclusive issue labels.
+def _has_opposing_labels(labels: list[str] | tuple[str, ...]) -> bool:
+    """Return True when a label set contains an impossible opposing pair."""
+    label_set = set(labels)
+    return any(left in label_set and right in label_set for left, right in OPPOSING_LABEL_PAIRS)
 
 # Return a neutral baseline feature vector representing a balanced face.
 def canonical_feature_vector() -> dict[str, float]:
@@ -524,6 +544,7 @@ def _select_multilabel_combos(
         combo
         for combo_size in (2, 3)
         for combo in combinations(non_balanced_labels, combo_size)
+        if not _has_opposing_labels(combo)
     ]
     rng.shuffle(all_combos)
 
@@ -579,6 +600,8 @@ def generate_sample(
 
     if "balanced" in active_labels and len(active_labels) > 1:
         raise ValueError("'balanced' cannot be combined with other active labels.")
+    if _has_opposing_labels(active_labels):
+        raise ValueError("active_labels cannot contain opposing label pairs.")
 
     if active_labels == ["balanced"]:
         features = canonical_feature_vector()

@@ -44,7 +44,7 @@ python app.py
 
 ## Video Links
 
-- Demo video: 
+- Demo video: https://drive.google.com/file/d/1n2jYIHCFuAMAAkU6GNzu_SQTDALx6lFw/view?usp=sharing
 - Technical walkthrough: 
 
 ## Evaluation
@@ -58,7 +58,18 @@ The final Random Forest configuration used `n_estimators = 200` and achieved:
 
 The Random Forest model was also evaluated for inference efficiency on 194 samples over 100 timed runs. Average batch inference time was `43.22 ms`, average per-sample latency was `0.223 ms`, and throughput was `4488.27` samples per second.
 
-Two successful qualitative examples are shown below. The first is an ideal drawing that the system classifies as balanced, and the second is a more generic drawing where the system detects proportion issues.
+The data that was used to train the model was synthetically generated based on the rule of thirds and fifths for facial proportions into a CSV. The data was then manually reviewed using `visualize_csv_row.py` which takes in a CSV row and outputs an image in `SketchCritic\data\visualizations` that visualizes the face corresponding to the row for manual review of classification. 
+
+```bash
+python src/visualize_csv_row.py data/sketchcritic_synthetic.csv --row 0
+```
+
+An example of the generated face is shown below.
+
+![Example of face visualization](data/visualizations/face_row_193.png)
+
+
+Two successful examples of qualitative evaluation for the model are shown below. The first is an ideal drawing that the system classifies as balanced, and the second is a more generic drawing where the system detects proportion issues.
 
 ![Perfect drawing result](evaluation_results/perfect_drawing_result.png)
 
