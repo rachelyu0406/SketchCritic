@@ -1,4 +1,4 @@
-"""Minimal MediaPipe Face Landmarker extraction for one image."""
+"""MediaPipe Face Landmarker extraction for one image."""
 
 from __future__ import annotations
 

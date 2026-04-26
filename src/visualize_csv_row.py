@@ -1,4 +1,4 @@
-"""Visualize one synthetic CSV row as a simple schematic face."""
+"""Visualize one synthetic CSV row as a simple schematic face for manual review."""
 
 from __future__ import annotations
 

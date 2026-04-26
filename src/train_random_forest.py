@@ -1,4 +1,4 @@
-"""Train a multi-label Random Forest on synthetic SketchCritic data."""
+"""Train a multi-label Random Forest on synthetic data."""
 
 from __future__ import annotations
 

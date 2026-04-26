@@ -1,86 +1,83 @@
 # SketchCritic
 
-SketchCritic is a minimal Python starter project for a CS372 Applied Machine Learning final project.
+SketchCritic is a facial-proportion critique tool that extracts MediaPipe face landmarks, computes engineered proportion features, and predicts likely proportion issues with a trained classifier. It includes a local Gradio app, command-line prediction scripts, synthetic-data generation, and evaluation notebooks for comparing model behavior.
 
-The project is intentionally split into two simple parts:
+## What it Does
 
-1. `src/landmarks.py` extracts MediaPipe facial landmarks from a single image and rejects zero-face or multi-face inputs.
-2. `src/features.py`, `src/synth_data.py`, `src/train_model.py`, `src/predict.py`, and `src/app.py` define an engineered-feature pipeline, synthetic labeled training data, MLP training, and user-facing prediction.
+SketchCritic takes a face image, runs MediaPipe Face Landmarker to locate facial landmarks, converts those landmarks into interpretable geometric features, and uses a trained Random Forest or MLP model to predict facial proportion issues such as eye-size imbalance, vertical placement issues, or nose-width relationships. The project also includes synthetic data generation for training, notebook-based evaluation, and simple visualization utilities for understanding generated feature rows.
 
-## Project Structure
+## Quick Start
 
-```text
-SketchCritic/
-  src/
-    landmarks.py
-    features.py
-    synth_data.py
-    train_model.py
-    predict.py
-    app.py
-  README.md
-  requirements.txt
-```
-
-## Setup
-
-Create a Python 3 virtual environment and install dependencies:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-For `src/landmarks.py`, you also need a MediaPipe Face Landmarker `.task` model file. Pass it with `--model-path` or set:
+Generate a small synthetic dataset:
 
 ```bash
-MEDIAPIPE_FACE_LANDMARKER_MODEL=/path/to/face_landmarker.task
+python src/synth_data.py data/sketchcritic_synthetic.csv --samples-per-class 4 --samples-per-multilabel-combo 1
 ```
 
-## Part 1: Landmark Extraction
-
-Run the landmark extractor on one image:
+Train the Random Forest model:
 
 ```bash
-python src/landmarks.py /path/to/image.jpg --model-path /path/to/face_landmarker.task
+python src/train_random_forest.py data/sketchcritic_synthetic.csv models/sketchcritic_rf.pkl
 ```
 
-Expected behavior:
-
-- exactly one face: returns a structured dictionary of landmark points
-- zero faces: raises a clear error
-- multiple faces: raises a clear error
-
-## Part 2: Synthetic Features + Small Neural Network
-
-- `src/features.py` computes facial proportion features from landmark output
-- `src/synth_data.py` generates synthetic labeled feature data from facial proportion deviations
-- `src/train_model.py` trains a small multi-label MLP on the synthetic data
-- `src/predict.py` runs extraction, feature computation, rule-based analysis, and MLP prediction together
-- `src/app.py` provides a minimal Gradio app that shows only the MLP output
-
-## Current Evaluation
-
-- Exact match accuracy: `0.9564`
-- Micro F1: `0.9854`
-- Macro F1: `0.9840`
-
-## Quick Start
+Run a prediction on one image:
 
 ```bash
-python src/synth_data.py data/sketchcritic_synthetic.csv --samples-per-class 200 --samples-per-multilabel-combo 50
-python src/train_model.py data/sketchcritic_synthetic.csv models/sketchcritic_mlp.pkl
-python src/predict.py image.jpg face_landmarker.task models/sketchcritic_mlp.pkl
-python src/app.py
+python src/predict.py image.jpg models/face_landmarker.task models/sketchcritic_rf.pkl
 ```
 
-`src/predict.py` keeps both the rule-based baseline and the MLP prediction visible for debugging and comparison.
+Launch the local Gradio app:
 
-`src/app.py` is the user-facing path and shows only the MLP prediction output.
+```bash
+python app.py
+```
 
-## Notes
+## Video Links
 
-- This starter keeps everything modular and intentionally minimal.
-- `features.py` includes TODO comments where exact MediaPipe landmark index choices may need refinement.
-- MediaPipe Face Landmarker is used for landmark extraction.
-- The MLP is trained on synthetic labeled feature data generated from facial proportion deviations.
-- The neural network is trained on engineered proportion features, not raw images.
+- Demo video: add your demo link here
+- Technical walkthrough: add your technical walkthrough link here
+
+## Evaluation
+
+The final Random Forest configuration used `n_estimators = 200` and achieved:
+
+- accuracy: `0.7949`
+- precision: `0.9783`
+- recall: `0.8491`
+- F1: `0.9091`
+
+The Random Forest model was also evaluated for inference efficiency on 194 samples over 100 timed runs. Average batch inference time was `43.22 ms`, average per-sample latency was `0.223 ms`, and throughput was `4488.27` samples per second.
+
+Two successful qualitative examples are shown below. The first is an ideal drawing that the system classifies as balanced, and the second is a more generic drawing where the system detects proportion issues.
+
+![Perfect drawing result](evaluation_results/perfect_drawing_result.png)
+
+![Generic drawing result](evaluation_results/drawing_result.png)
+
+### Error Analysis
+
+The project also includes qualitative error analysis using failure-case examples. The current system does not work well in three common situations:
+
+- when there are two or more faces in the input image
+- when the drawing is not front-facing and is shown from another angle
+- when the drawing is too simple for MediaPipe to detect a face reliably
+
+These failure cases are illustrated below.
+
+![Two faces error](evaluation_results/error_two_faces.png)
+
+![Not front facing error](evaluation_results/error_not_front_facing.png)
+
+![Too simple drawing error](evaluation_results/error_drawing_too_simple.png)
+
+More detailed evaluation, model-improvement logs, cross-validation comparisons, and Random Forest inference-efficiency measurements are documented in `notebooks/evaluate_models.ipynb`.
+
+## Individual Contributions
+
+This project was completed individually.

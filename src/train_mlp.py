@@ -1,4 +1,4 @@
-"""Train a small multi-label MLP on synthetic SketchCritic data."""
+"""Train a small multi-label MLP on synthetic data."""
 
 from __future__ import annotations
 
